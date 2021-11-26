@@ -7,13 +7,17 @@ import { useFrame } from '@react-three/fiber';
 
 type position = [x: number, y: number, z: number];
 
-const Pong = () => {
+const Pong: React.VFC<{incrementHandler: (player: number) => void}> = ({incrementHandler}) => {
   const controls = useControls();
 
   const [paddlePosition, setPaddlePosition] = useState<position>([0, 0, 20]);
   const [ballPosition, setBallPosition] = useState<position>([0, 0, 0]);
   const [ballVelocity, setBallVelocity] = useState<position>([0.2, 0, 0.1]);
 
+  const resetBall = () => {
+    setBallPosition([0, 0, 0]);
+    setBallVelocity([Math.random() * 0.3 - 0.1, 0, Math.random() * 0.3 + 0.1]);
+  }
   useFrame(() => {
     const { forward, backward, left, right, reset } = controls.current;
     if (left) {
@@ -26,10 +30,21 @@ const Pong = () => {
       setBallVelocity(prev => [prev[0] * -1, prev[1], prev[2]]);
     } else if (ballPosition[0] < -10 && ballVelocity[0] < 0) {
       setBallVelocity(prev => [prev[0] * -1, prev[1], prev[2]]);
-    } else if (ballVelocity[2] > 0 && 19 <= ballPosition[2] && ballPosition[2] <= 21 && paddlePosition[0] - 1.5 <= ballPosition[0] && ballPosition[0] <= paddlePosition[0] + 1.5/* 手前のpaddleにぶつかったとき */) {
+    } else if (ballVelocity[2] > 0 && 19 <= ballPosition[2] && ballPosition[2] <= 19.5 && paddlePosition[0] - 1.5 <= ballPosition[0] && ballPosition[0] <= paddlePosition[0] + 1.5/* 手前のpaddleにぶつかったとき */) {
       setBallVelocity(prev => [prev[0], prev[1], prev[2] * -1]);
-    } else if (ballVelocity[2] < 0 && -19 >= ballPosition[2] && ballPosition[2] >= -21 && paddlePosition[0] -1.5 <= ballPosition[0] && ballPosition[0] <= paddlePosition[0] + 1.5/* 後ろのpaddleにぶつかったとき */) {
+    } else if (ballVelocity[2] < 0 && -19 >= ballPosition[2] && ballPosition[2] >= -19.5 && paddlePosition[0] -1.5 <= ballPosition[0] && ballPosition[0] <= paddlePosition[0] + 1.5/* 後ろのpaddleにぶつかったとき */) {
       setBallVelocity(prev => [prev[0], prev[1], prev[2] * -1]);
+    }
+
+    if (ballPosition[2] <= -40/2)
+    {
+      incrementHandler(0);
+      resetBall();
+    }
+    if (ballPosition[2] >= 40/2)
+    {
+      incrementHandler(1);
+      resetBall();
     }
 
     setBallPosition(prev => [prev[0] + ballVelocity[0], prev[1] + ballVelocity[1], prev[2] + ballVelocity[2]]);
@@ -39,7 +54,6 @@ const Pong = () => {
     <>
       <color attach="background" args={['#888']} />
       <ambientLight intensity={0.5} />
-      <pointLight position={[-10, -10, -10]} />
       <Paddle position={paddlePosition} />
       <Paddle position={[paddlePosition[0], paddlePosition[1], paddlePosition[2] * -1]} />
       <Ball position={ballPosition} />

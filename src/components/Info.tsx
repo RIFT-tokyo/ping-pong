@@ -1,4 +1,4 @@
-const Info = () => {
+const Info: React.VFC<{points: number[]}> = ({points}) => {
 	return (
 		<div style={{
 			position: 'absolute',
@@ -8,7 +8,7 @@ const Info = () => {
 			color: 'white',
 			fontSize: '1.2em',
 		}}>
-			Hello World
+			Pong! {points[0]} - {points[1]}
 		</div>
 	);
 }
