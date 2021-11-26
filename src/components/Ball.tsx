@@ -21,8 +21,8 @@ const Ball: React.VFC<{position?: [x: number, y: number, z: number]}> = (props) 
 		onClick={(event) => click(!clicked)}
 		onPointerOver={(event) => hover(true)}
 		onPointerOut={(event) => hover(false)}>
-		<sphereBufferGeometry args={[ clicked ? 1.4 : 0.7, 16, 16]} />
-		<meshNormalMaterial wireframe />
+		<sphereBufferGeometry args={[ clicked ? 1.4 : 0.5, 16, 16]} />
+		<meshNormalMaterial wireframe={hovered ? true : undefined} />
 	  </mesh>
 	)
 }

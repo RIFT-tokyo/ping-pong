@@ -1,8 +1,8 @@
-import { useFrame } from "@react-three/fiber"
+// import { useFrame } from "@react-three/fiber"
 import { useRef, useState } from "react"
 import { Mesh } from "three"
 
-const Box: React.VFC<{position?: [x: number, y: number, z: number]}> = (props) => {
+const Paddle: React.VFC<{position?: [x: number, y: number, z: number]}> = (props) => {
 	// This reference gives us direct access to the THREE.Mesh object
 	const ref = useRef({} as Mesh)
 	// Hold state for hovered and clicked events
@@ -21,10 +21,10 @@ const Box: React.VFC<{position?: [x: number, y: number, z: number]}> = (props) =
 		onClick={(event) => click(!clicked)}
 		onPointerOver={(event) => hover(true)}
 		onPointerOut={(event) => hover(false)}>
-		<boxBufferGeometry args={[1, 1, 1]} />
-		<meshNormalMaterial />
+		<boxBufferGeometry args={[3, 1, 1]} />
+		<meshNormalMaterial wireframe={hovered ? true : undefined} />
 	  </mesh>
 	)
   }
 
-  export default Box;
+  export default Paddle;

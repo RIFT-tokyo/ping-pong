@@ -21,8 +21,8 @@ const Board: React.VFC<{position?: [x: number, y: number, z: number]}> = (props)
 		onClick={(event) => click(!clicked)}
 		onPointerOver={(event) => hover(true)}
 		onPointerOut={(event) => hover(false)}>
-		<planeBufferGeometry args={[5, 10]} />
-		<meshNormalMaterial />
+		<planeBufferGeometry args={[20, 40]} />
+		<meshStandardMaterial color={hovered ? "green" : "orange"} />
 	  </mesh>
 	)
   }
