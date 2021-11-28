@@ -7,7 +7,7 @@ const Wall: React.VFC<{position: position}> = ({ position }) => {
 	return (
 	  <mesh ref={ref} >
 			<boxBufferGeometry args={[0.2, 1, 40]} />
-			<meshNormalMaterial/>
+			<meshStandardMaterial color="green"/>
 	  </mesh>
 	)
   }

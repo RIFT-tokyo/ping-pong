@@ -37,7 +37,7 @@ const Pong: React.VFC<{incrementHandler: (player: number) => void}> = ({incremen
     <>
       <color attach="background" args={['#888']} />
       <ambientLight intensity={0.5} />
-      <Physics defaultContactMaterial={{friction: 1, restitution: 1.05}} gravity={[0, 0, 0]}>
+      <Physics defaultContactMaterial={{friction: 0, restitution: 1.06}} gravity={[0, 0, 0]}>
         <Wall position={[10, 0.5, 0]} />
         <Wall position={[-10, 0.5, 0]} />
         <Paddle position={userPaddlePosition}/>
