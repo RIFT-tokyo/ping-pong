@@ -1,7 +1,7 @@
 import { usePlane } from "@react-three/cannon"
 
-const Board: React.VFC<{position?: [x: number, y: number, z: number]}> = (props) => {
-	const [ ref ] = usePlane(() => ({ rotation: [-Math.PI / 2, 0, 0], ...props }))
+const Ciel: React.VFC<{position?: [x: number, y: number, z: number]}> = (props) => {
+	const [ ref ] = usePlane(() => ({ rotation: [Math.PI / 2, 0, 0], ...props }))
 	// useFrame((state, delta) => {})
 	return (
 	  <mesh
@@ -13,4 +13,4 @@ const Board: React.VFC<{position?: [x: number, y: number, z: number]}> = (props)
 	)
   }
 
-  export default Board;
+  export default Ciel;
