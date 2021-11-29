@@ -13,17 +13,17 @@ const Ball: React.VFC<{position: MutableRefObject<position>}> = ({ position }) =
 		api.velocity.set(15 * Math.cos(x), 0, 15 * Math.sin(x))
   }
 
+	// 得点が入ったらボールをリセットする
   useFrame(() => {
-
-    if (position.current[2] <= -40/2) {
+    if (position.current[2] < -40/2) {
 			resetBall();
 		}
-    if (position.current[2] >= 40/2) {
+    if (position.current[2] > 40/2) {
 			resetBall();
 		}
-
 	});
 
+	// ボールの初速度・角度を設定
 	useEffect(() => {
 		/* 0 < sin(x) < 1 */
 		let x = (Math.random() * Math.PI / 2 + Math.PI / 4) * (Math.random() > 0.5 ? 1 : -1)

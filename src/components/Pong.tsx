@@ -7,14 +7,16 @@ import { useFrame } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
 import { position } from '../type/position';
 import Wall from './Wall';
+import Info from './Info';
 
-const Pong: React.VFC<{incrementHandler: (player: number) => void}> = ({incrementHandler}) => {
+const Pong = () => {
   const controls = useControls();
 
   const [userPaddlePosition, setUserPaddlePosition] = useState<position>([0, 0.5, 19.5]);
   const [enemyPaddlePosition, setEnemyPaddlePosition] = useState<position>([0, 0.5, -19.5]);
-//  const [ballPosition, setBallPosition] = useState<position>([0, 0.5, 0]);
+  const [points, setPoints] = useState<number[]>([0, 0]);
   const ballPosition = useRef<position>([0, 0.5, 0]);
+
   useFrame(() => {
     const { /*forward, backward,*/ left, right, /*reset*/ } = controls.current;
     if (left && userPaddlePosition[0] > -((20 - 3) / 2 - 0.25)) {
@@ -31,10 +33,10 @@ const Pong: React.VFC<{incrementHandler: (player: number) => void}> = ({incremen
     setEnemyPaddlePosition(prev => [newEnemyX, prev[1], prev[2]]);
 
     if (ballPosition.current[2] <= -40/2) {
-      incrementHandler(0);
+      setPoints(prev => [prev[0] + 1, prev[1]]);
     }
     if (ballPosition.current[2] >= 40/2) {
-      incrementHandler(1);
+      setPoints(prev => [prev[0], prev[1] + 1]);
     }
   })
 
@@ -51,6 +53,7 @@ const Pong: React.VFC<{incrementHandler: (player: number) => void}> = ({incremen
         <Board position={[0, 0, 0]}/>
       </Physics>
       <OrbitControls />
+      <Info points={points}/>
     </>
   )
 }

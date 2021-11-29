@@ -1,15 +1,17 @@
+import { Text } from "@react-three/drei";
+
 const Info: React.VFC<{points: number[]}> = ({points}) => {
 	return (
-		<div style={{
-			position: 'absolute',
-			display: 'block',
-			top: 50,
-			left: 50,
-			color: 'white',
-			fontSize: '1.2em',
-		}}>
+		<Text
+			color="white"
+			anchorX="center"
+			anchorY="middle"
+			fontSize={5}
+			font="https://fonts.gstatic.com/s/raleway/v14/1Ptrg8zYS_SKggPNwK4vaqI.woff"
+			position={[0, 10, 0]}
+		>
 			Pong! {points[0]} - {points[1]}
-		</div>
+		</Text>
 	);
 }
 
