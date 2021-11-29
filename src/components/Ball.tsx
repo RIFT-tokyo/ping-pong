@@ -4,8 +4,13 @@ import { MutableRefObject, useEffect } from "react"
 import { position } from "../type/position"
 import { useFrame } from '@react-three/fiber';
 
-const Ball: React.VFC<{position: MutableRefObject<position>}> = ({ position }) => {
-	const [ ref, api ] = useSphere(() => ({mass: 10, args: [0.5], position: position.current}))
+const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position }) => {
+
+	const [ ref, api ] = useSphere(() => ({
+		mass: 10,
+		args: [0.5],
+		position: position.current
+	}))
 
   const resetBall = () => {
     api.position.set(0, 0.5, 0);

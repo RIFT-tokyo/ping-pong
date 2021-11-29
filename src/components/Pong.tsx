@@ -1,7 +1,7 @@
 import Paddle from './Paddle';
 import Ball from './Ball';
 import Board from './Board';
-import { Environment, OrbitControls } from '@react-three/drei';
+import { Environment } from '@react-three/drei';
 import { useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
