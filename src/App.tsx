@@ -4,7 +4,7 @@ import emotionReset from 'emotion-reset';
 import Pong from './components/Pong';
 import { Canvas } from '@react-three/fiber';
 import Info from './components/Info';
-import { useState } from 'react';
+import { useRef } from 'react';
 
 const globalStyles = css`
   ${emotionReset}
@@ -22,11 +22,11 @@ const theme = css`
 `;
 
 function App() {
-  const [points, setPoints] = useState([0, 0]);
+  const points = useRef([0, 0]);
 
   const incrementPoint = (player: number) => {
-    if (player === 0) setPoints(prev => [prev[0]++, prev[1]])
-    if (player === 1) setPoints(prev => [prev[0], prev[1]++])
+      points.current[player] += 1;
+      console.log(points.current);
   }
 
   return (
@@ -37,7 +37,7 @@ function App() {
         <Canvas shadows={true} camera={{position: [0, 10, 30]}}>
           <Pong incrementHandler={incrementPoint}/>
         </Canvas>
-        <Info points={points}/>
+        <Info points={points.current}/>
       </div>
     </div>
   );

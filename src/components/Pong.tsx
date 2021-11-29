@@ -13,31 +13,36 @@ const Pong: React.VFC<{incrementHandler: (player: number) => void}> = ({incremen
 
   const [userPaddlePosition, setUserPaddlePosition] = useState<position>([0, 0.5, 19.5]);
   const [enemyPaddlePosition, setEnemyPaddlePosition] = useState<position>([0, 0.5, -19.5]);
-  const [ballPosition, setBallPosition] = useState<position>([0, 0.5, 0]);
-
-  const resetBall = () => {
-    setBallPosition([0, 0, 0]);
-  }
+//  const [ballPosition, setBallPosition] = useState<position>([0, 0.5, 0]);
+  const ballPosition = useRef<position>([0, 0.5, 0]);
   useFrame(() => {
     const { /*forward, backward,*/ left, right, /*reset*/ } = controls.current;
     if (left && userPaddlePosition[0] > -((20 - 3) / 2 - 0.25)) {
       setUserPaddlePosition(prev => [prev[0] - 0.3, prev[1], prev[2]]);
-      setEnemyPaddlePosition(prev => [prev[0] - 0.3, prev[1], prev[2]]);
     }
     if (right && userPaddlePosition[0] < ((20 - 3) / 2) - 0.25) {
       setUserPaddlePosition(prev => [prev[0] + 0.3, prev[1], prev[2]]);
-      setEnemyPaddlePosition(prev => [prev[0] + 0.3, prev[1], prev[2]]);
     }
 
-    if (ballPosition[2] <= -40/2) {incrementHandler(0); resetBall();}
-    if (ballPosition[2] >= 40/2) {incrementHandler(1); resetBall();}
+    let newEnemyX = ballPosition.current[0];
+    if (Math.abs(newEnemyX) - ((20 - 3) / 2) > Number.EPSILON) {
+      newEnemyX = enemyPaddlePosition[0];
+    }
+    setEnemyPaddlePosition(prev => [newEnemyX, prev[1], prev[2]]);
+
+    if (ballPosition.current[2] <= -40/2) {
+      incrementHandler(0);
+    }
+    if (ballPosition.current[2] >= 40/2) {
+      incrementHandler(1);
+    }
   })
 
   return (
     <>
       <color attach="background" args={['#888']} />
       <ambientLight intensity={0.5} />
-      <Physics defaultContactMaterial={{friction: 0, restitution: 1.06}} gravity={[0, 0, 0]}>
+      <Physics defaultContactMaterial={{restitution: 1.06}} gravity={[0, 0, 0]}>
         <Wall position={[10, 0.5, 0]} />
         <Wall position={[-10, 0.5, 0]} />
         <Paddle position={userPaddlePosition}/>
