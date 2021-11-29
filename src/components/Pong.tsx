@@ -1,7 +1,7 @@
 import Paddle from './Paddle';
 import Ball from './Ball';
 import Board from './Board';
-import { OrbitControls } from '@react-three/drei';
+import { Environment, OrbitControls } from '@react-three/drei';
 import { useEffect, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
@@ -54,6 +54,7 @@ const Pong = () => {
       </Physics>
       <OrbitControls />
       <Info points={points}/>
+      <Environment preset="sunset" background />
     </>
   )
 }

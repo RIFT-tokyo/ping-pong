@@ -3,6 +3,7 @@ import { css, Global } from '@emotion/react';
 import emotionReset from 'emotion-reset';
 import Pong from './components/Pong';
 import { Canvas } from '@react-three/fiber';
+import { Suspense } from 'react';
 
 const globalStyles = css`
   ${emotionReset}
@@ -23,7 +24,9 @@ function App() {
         camera={{ position: [0, 10, 30] }}
         style={{ width: "100vw", height: "100vh" }}
       >
-        <Pong />
+        <Suspense fallback={null}>
+          <Pong />
+        </Suspense>
       </Canvas>
     </div>
   );
