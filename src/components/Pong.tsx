@@ -3,7 +3,7 @@ import Ball from './Ball';
 import Board from './Board';
 import { Environment, OrbitControls } from '@react-three/drei';
 import { useEffect, useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
 import { position } from '../type/position';
 import Wall from './Wall';
@@ -16,6 +16,12 @@ const Pong = () => {
   const [enemyPaddlePosition, setEnemyPaddlePosition] = useState<position>([0, 0.5, -19.5]);
   const [points, setPoints] = useState<number[]>([0, 0]);
   const ballPosition = useRef<position>([0, 0.5, 0]);
+
+  const state = useThree();
+
+  useEffect(() => {
+    state.camera.position.set(userPaddlePosition[0] * 0.3, 10, 30);
+  }, [state.camera.position, userPaddlePosition]);
 
   useFrame(() => {
     const { /*forward, backward,*/ left, right, /*reset*/ } = controls.current;
@@ -52,7 +58,6 @@ const Pong = () => {
         <Ball position={ballPosition} />
         <Board position={[0, 0, 0]}/>
       </Physics>
-      <OrbitControls />
       <Info points={points}/>
       <Environment preset="sunset" background />
     </>
