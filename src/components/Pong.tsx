@@ -8,6 +8,7 @@ import { Physics } from '@react-three/cannon';
 import { position } from '../type/position';
 import Wall from './Wall';
 import Info from './Info';
+import PointLight from './PointLight';
 
 const Pong = () => {
   const controls = useControls();
@@ -41,8 +42,9 @@ const Pong = () => {
     if (ballPosition.current[2] <= -40/2) {
       setPoints(prev => [prev[0] + 1, prev[1]]);
     }
-    if (ballPosition.current[2] >= 40/2) {
+    if (ballPosition.current[2] > 40/2) {
       setPoints(prev => [prev[0], prev[1] + 1]);
+      console.log("kita")
     }
   })
 
@@ -50,6 +52,10 @@ const Pong = () => {
     <>
       <color attach="background" args={['#888']} />
       <ambientLight intensity={0.5} />
+      <PointLight position={[6, 15, -7]} />
+      {/*<PointLight position={[7, 10, 7]} />*/}
+      {/*<PointLight position={[-6, 10, -7]} />*/}
+      <PointLight position={[-7, 15, 7]} />
       <Physics defaultContactMaterial={{restitution: 1.06}} gravity={[0, 0, 0]}>
         <Wall position={[10, 0.5, 0]} />
         <Wall position={[-10, 0.5, 0]} />
@@ -58,7 +64,8 @@ const Pong = () => {
         <Ball position={ballPosition} />
         <Board position={[0, 0, 0]}/>
       </Physics>
-      <Info points={points}/>
+      {/*<TextObject text="Hello" />*/}
+      <Info points={points} />
       <Environment preset="sunset" background />
     </>
   )

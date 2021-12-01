@@ -19,7 +19,10 @@ const Paddle: React.VFC<{position: position}> = ({ position }) => {
 		api.position.set(position[0], position[1], position[2])
 	})
 	return (
-	  <mesh ref={ref} >
+	  <mesh
+			ref={ref}
+			receiveShadow
+		>
 			<boxBufferGeometry args={[3, 1, 1]}/>
 			<meshNormalMaterial/>
 	  </mesh>

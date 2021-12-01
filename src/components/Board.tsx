@@ -12,9 +12,11 @@ const Board: React.VFC<{position?: [x: number, y: number, z: number]}> = (props)
 	return (
 	  <mesh
 		ref={ref}
+		receiveShadow
 		>
 		<planeBufferGeometry args={[20, 40]} />
 		<meshStandardMaterial {...property} />
+		<meshStandardMaterial />
 	  </mesh>
 	)
   }

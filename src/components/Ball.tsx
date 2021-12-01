@@ -20,13 +20,10 @@ const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position })
 
 	// 得点が入ったらボールをリセットする
   useFrame(() => {
-    if (position.current[2] < -40/2) {
-			resetBall();
-		}
-		if (position.current[2] > 40/2) {
+	if (Math.abs(position.current[2]) > 40/2) {
 			resetBall();
 	  }
-  	if (Math.abs(position.current[0]) > 20/2 + 1) {
+  	if (Math.abs(position.current[0]) > 20/2+15) {
 			resetBall();
 		}
 	});
@@ -36,7 +33,6 @@ const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position })
 		/* 0 < sin(x) < 1 */
 		let x = (Math.random() * Math.PI / 2 + Math.PI / 4) * (Math.random() > 0.5 ? 1 : -1)
 		api.velocity.set(15 * Math.cos(x), 0, 15 * Math.sin(x))
-
 		const unsubscribe = api.position.subscribe((v) => {
 			position.current = v
 		})
@@ -49,8 +45,9 @@ const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position })
 	})
 	return (
 	  <mesh
-		position={position.current}
-		ref={ref}
+			position={position.current}
+			ref={ref}
+			castShadow
 		>
 			<sphereBufferGeometry args={[0.5, 16, 16]} />
 			{/* <meshNormalMaterial wireframe /> */}
