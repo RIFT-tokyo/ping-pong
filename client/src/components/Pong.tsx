@@ -20,6 +20,8 @@ const Pong = () => {
   const [enemyPaddlePosition, setEnemyPaddlePosition] = useState<position>([0, 0.5, -19.5]);
   const [points, setPoints] = useState<number[]>([0, 0]);
   const ballPosition = useRef<position>([0, 0.5, 0]);
+
+  const [roomID, setRoomID] = useState<string>();
   const socket = useRef<Socket>();
 
   const state = useThree();
@@ -33,11 +35,22 @@ const Pong = () => {
     state.camera.position.set(userPaddlePosition[0] * 0.3, 10, 30);
   }, [state.camera.position, userPaddlePosition]);
 
+  useEffect(() => {
+    socket.current?.on('server-to-client-room-id', (data: { roomID: string }) => {
+      setRoomID(data.roomID)
+    });
+    // 2. recieve paddle postion from websocket
+    socket.current?.on('server-to-client-player-position', (data: { player: number, paddlePosition: [number, number, number] }) => {
+      console.log(data);
+      setEnemyPaddlePosition([-data.paddlePosition[0], data.paddlePosition[1], -data.paddlePosition[2]]);
+    });
+  // eslint-disable-next-line
+  }, [])
+
   useFrame(() => {
     // 1. recieve ball position from websocket (player1)
-    // 2. recieve paddle postion from websocket
 
-    // 3. set ball position from websocket
+    // 3. set ball position and velocity from websocket
 
     // 4. set own position from keyboard
     const { /*forward, backward,*/ left, right, /*reset*/ } = controls.current;
@@ -49,13 +62,15 @@ const Pong = () => {
     }
 
     // 5. set enemy position from websocket
+    /*
     let newEnemyX = ballPosition.current[0];
     if (Math.abs(newEnemyX) - ((20 - 3) / 2) > Number.EPSILON) {
       newEnemyX = enemyPaddlePosition[0];
     }
     setEnemyPaddlePosition(prev => [newEnemyX, prev[1], prev[2]]);
+    */
 
-    // 6. calulate ball position
+    // 6. get ball position and velocity from react-three-cannon
     if (ballPosition.current[2] <= -40/2) {
       setPoints(prev => [prev[0] + 1, prev[1]]);
     }
@@ -65,6 +80,7 @@ const Pong = () => {
 
     // 7. emit ball position
     // 8. emit paddle position
+    socket.current?.emit('client-to-server-player-position', { roomID: roomID, player: 1, paddlePosition: userPaddlePosition } /*自分のいちを送る(userPaddlePosition)*/);
   })
 
   return (
