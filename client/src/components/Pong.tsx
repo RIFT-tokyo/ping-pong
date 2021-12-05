@@ -9,7 +9,6 @@ import { position } from '../type/position';
 import Wall from './Wall';
 import Info from './Info';
 import PointLight from './PointLight';
-import Text from './Text';
 import { Socket, io } from 'socket.io-client';
 import Text2D from './Text2D';
 
@@ -21,31 +20,40 @@ const Pong = () => {
   const [points, setPoints] = useState<number[]>([0, 0]);
   const ballPosition = useRef<position>([0, 0.5, 0]);
 
-  const [roomID, setRoomID] = useState<string>();
+  const [roomID, setRoomID] = useState<string>("testroom");
+  const [playerID, setPlayerID] = useState<number>(0);
   const socket = useRef<Socket>();
 
   const state = useThree();
 
   const connectSocket = (e: ThreeEvent<MouseEvent>) => {
-    console.log('socket connected');
-    socket.current = io('http://localhost:4000/pong');
+    socket.current?.emit('client-to-server-request-room-id')
   }
 
   useEffect(() => {
     state.camera.position.set(userPaddlePosition[0] * 0.3, 10, 30);
   }, [state.camera.position, userPaddlePosition]);
 
+
   useEffect(() => {
-    socket.current?.on('server-to-client-room-id', (data: { roomID: string }) => {
+    console.log('socket connected');
+    socket.current = io('http://localhost:4000/pong');
+
+    socket.current.on('server-to-client-room-id', (data: { roomID: string, playerID: number }) => {
+      console.log('room id: ', data.roomID);
       setRoomID(data.roomID)
+      setPlayerID(data.playerID)
     });
     // 2. recieve paddle postion from websocket
-    socket.current?.on('server-to-client-player-position', (data: { player: number, paddlePosition: [number, number, number] }) => {
-      console.log(data);
-      setEnemyPaddlePosition([-data.paddlePosition[0], data.paddlePosition[1], -data.paddlePosition[2]]);
+    socket.current.on('server-to-client-player-position', (data: { player: number, paddlePosition: [number, number, number] }) => {
+//      console.log(data);
+      if (data.player !== playerID) {
+        setEnemyPaddlePosition([-data.paddlePosition[0], data.paddlePosition[1], -data.paddlePosition[2]]);
+      }
     });
   // eslint-disable-next-line
   }, [])
+
 
   useFrame(() => {
     // 1. recieve ball position from websocket (player1)
@@ -80,7 +88,9 @@ const Pong = () => {
 
     // 7. emit ball position
     // 8. emit paddle position
-    socket.current?.emit('client-to-server-player-position', { roomID: roomID, player: 1, paddlePosition: userPaddlePosition } /*自分のいちを送る(userPaddlePosition)*/);
+    if (roomID !== "testroom") {
+      socket.current?.emit('client-to-server-player-position', { roomID: roomID, player: playerID, paddlePosition: userPaddlePosition } /*自分のいちを送る(userPaddlePosition)*/);
+    }
   })
 
   return (
@@ -138,3 +148,20 @@ export function useControls() {
   // useKeyPress(['r'], (pressed) => (keys.current.reset = pressed))
   return keys
 }
+
+
+/*
+
+  velocity * 1.1
+  velocity * 1.09
+  velocity * 1.08
+  ....
+  velocity * 1.01
+  velocity * 1.0
+  velocity * 1.0
+  velocity * 1.0
+  velocity * 1.0
+  velocity * 1.0
+  velocity * 1.0
+
+*/
