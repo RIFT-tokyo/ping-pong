@@ -1,21 +1,29 @@
 import { useSphere } from "@react-three/cannon"
 import { useTexture } from "@react-three/drei"
-import { MutableRefObject, useEffect } from "react"
+import { MutableRefObject, useEffect, useRef } from "react"
 import { position } from "../type/position"
 import { useFrame } from '@react-three/fiber';
 
 const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position }) => {
+//	const restitution = useRef(1.2)
 
 	const [ ref, api ] = useSphere(() => ({
 		mass: 10,
 		args: [0.5],
-		position: position.current
+		position: position.current,
+		restitution: 1,
+		/*
+		onCollide: () => {
+			restitution.current = Math.max(restitution.current - 0.01, 1.0);
+			console.log(restitution.current, ": ", api.velocity.);
+		}
+		*/
 	}))
 
   const resetBall = () => {
     api.position.set(0, 0.5, 0);
 		let x = (Math.random() * Math.PI / 2 + Math.PI / 4) * (Math.random() > 0.5 ? 1 : -1)
-		api.velocity.set(15 * Math.cos(x), 0, 15 * Math.sin(x))
+		api.velocity.set(22 * Math.cos(x), 0, 22 * Math.sin(x))
 	}
 
 	// 得点が入ったらボールをリセットする
@@ -32,7 +40,7 @@ const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position })
 	useEffect(() => {
 		/* 0 < sin(x) < 1 */
 		let x = (Math.random() * Math.PI / 2 + Math.PI / 4) * (Math.random() > 0.5 ? 1 : -1)
-		api.velocity.set(15 * Math.cos(x), 0, 15 * Math.sin(x))
+		api.velocity.set(22 * Math.cos(x), 0, 22 * Math.sin(x))
 		const unsubscribe = api.position.subscribe((v) => {
 			position.current = v
 		})

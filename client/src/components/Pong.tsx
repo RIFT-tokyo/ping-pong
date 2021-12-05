@@ -69,8 +69,8 @@ const Pong = () => {
       setUserPaddlePosition(prev => [prev[0] + 0.3, prev[1], prev[2]]);
     }
 
-    // 5. set enemy position from websocket
     /*
+    // 5. set enemy position from websocket
     let newEnemyX = ballPosition.current[0];
     if (Math.abs(newEnemyX) - ((20 - 3) / 2) > Number.EPSILON) {
       newEnemyX = enemyPaddlePosition[0];
@@ -102,7 +102,7 @@ const Pong = () => {
       {/*<PointLight position={[7, 10, 7]} />*/}
       {/*<PointLight position={[-6, 10, -7]} />*/}
       <PointLight position={[-7, 15, 7]} />
-      <Physics defaultContactMaterial={{restitution: 1.06}} gravity={[0, 0, 0]}>
+      <Physics defaultContactMaterial={{restitution: 1.04}} gravity={[0, 0, 0]}>
         <Wall position={[10, 0.5, 0]} />
         <Wall position={[-10, 0.5, 0]} />
         <Paddle position={userPaddlePosition}/>

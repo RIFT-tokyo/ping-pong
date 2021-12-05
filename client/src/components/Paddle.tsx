@@ -11,7 +11,7 @@ const Paddle: React.VFC<{position: position}> = ({ position }) => {
 		position: position,
 		onCollide: () => {
 			play()
-			console.log('collide');
+			// console.log('collide');
 		},
 }))
 
