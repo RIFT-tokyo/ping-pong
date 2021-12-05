@@ -37,15 +37,19 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     socket.emit('server-to-client-room-id', { roomID: this.tmpRoomID, playerID: playerID });
   }
 
-  // @SubscribeMessage('client-to-server-ball-position')
-  // handleBall(@ConnectedSocket() socket: Socket, @MessageBody() payload: { roomID: string, player: number, ballPosition: [number, number, number] }): void {
-  //   if (payload.player === 2) {
-  //     return
-  //   }
-  //   // io.sockets.emit
-  //   //this.server.to(payload.roomID).emit('server-to-client-ball-position', { player: payload.player, ballPosition: payload.ballPosition });
-  //   this.server.emit('server-to-client-ball-position', { player: payload.player, ballPosition: payload.ballPosition });
-  // }
+  @SubscribeMessage('client-to-server-ball-position')
+  handleBall(@ConnectedSocket() socket: Socket, @MessageBody() payload: { roomID: string, player: number, ballPosition: [number, number, number] }): void {
+    /*
+    if (payload.player === 2) {
+      return
+    }
+    */
+    // io.sockets.emit
+    //this.server.to(payload.roomID).emit('server-to-client-ball-position', { player: payload.player, ballPosition: payload.ballPosition });
+    console.log('roomID: ', payload.roomID, ', player: ', payload.player, ', position: ', payload.ballPosition);
+    // socket.broadcast.emit('server-to-client-ball-position', { player: payload.player, ballPosition: payload.ballPosition });
+    this.server.emit('server-to-client-ball-position', { player: payload.player, ballPosition: payload.ballPosition });
+  }
 
   // キーイベントがクライアントから来た
   @SubscribeMessage('client-to-server-player-position')
@@ -55,7 +59,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // this.server.broadcast.emit('server-to-client-player-position', { player: payload.player, paddlePosition: payload.paddlePosition });
     // socket.broadcast.to(payload.roomID).emit('server-to-client-player-position', { player: payload.player, paddlePosition: payload.paddlePosition });
 
-    console.log('roomID: ', payload.roomID, ', player: ', payload.player, ', position: ', payload.paddlePosition);
+    // console.log('roomID: ', payload.roomID, ', player: ', payload.player, ', position: ', payload.paddlePosition);
     socket.broadcast.emit('server-to-client-player-position', { player: payload.player, paddlePosition: payload.paddlePosition });
   }
 

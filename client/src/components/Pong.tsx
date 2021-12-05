@@ -1,7 +1,7 @@
 import Paddle from './Paddle';
 import Ball from './Ball';
 import Board from './Board';
-import { Environment } from '@react-three/drei';
+import { Environment, Sphere } from '@react-three/drei';
 import { useEffect, useRef, useState } from 'react';
 import { useFrame, useThree, ThreeEvent } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
@@ -21,8 +21,10 @@ const Pong = () => {
   const ballPosition = useRef<position>([0, 0.5, 0]);
 
   const [roomID, setRoomID] = useState<string>("testroom");
-  const [playerID, setPlayerID] = useState<number>(0);
+  const playerID = useRef<number>(0);
   const socket = useRef<Socket>();
+
+  const serverBallPosition = useRef<position>([0, 2, 0]);
 
   const state = useThree();
 
@@ -42,14 +44,23 @@ const Pong = () => {
     socket.current.on('server-to-client-room-id', (data: { roomID: string, playerID: number }) => {
       console.log('room id: ', data.roomID);
       setRoomID(data.roomID)
-      setPlayerID(data.playerID)
+      playerID.current = data.playerID;
     });
     // 2. recieve paddle postion from websocket
     socket.current.on('server-to-client-player-position', (data: { player: number, paddlePosition: [number, number, number] }) => {
 //      console.log(data);
-      if (data.player !== playerID) {
+      if (data.player !== playerID.current) {
         setEnemyPaddlePosition([-data.paddlePosition[0], data.paddlePosition[1], -data.paddlePosition[2]]);
       }
+    });
+    socket.current.on('server-to-client-ball-position', (data: { player: number, ballPosition: [number, number, number] }) => {
+      console.log(playerID, ":", data);
+      if (data.player === playerID.current) {
+        serverBallPosition.current = [data.ballPosition[0], serverBallPosition.current[1], data.ballPosition[2]];
+      } else {
+        serverBallPosition.current = [-data.ballPosition[0], serverBallPosition.current[1], -data.ballPosition[2]];
+      }
+      console.log(serverBallPosition.current);
     });
   // eslint-disable-next-line
   }, [])
@@ -89,12 +100,23 @@ const Pong = () => {
     // 7. emit ball position
     // 8. emit paddle position
     if (roomID !== "testroom") {
-      socket.current?.emit('client-to-server-player-position', { roomID: roomID, player: playerID, paddlePosition: userPaddlePosition } /*自分のいちを送る(userPaddlePosition)*/);
+      if (playerID.current === 1) {
+        socket.current?.emit('client-to-server-ball-position', {
+          roomID: roomID, player: playerID.current, ballPosition: ballPosition.current
+        } /*ボールの位置を送る(userPaddlePosition)*/);
+      }
+      socket.current?.emit('client-to-server-player-position', {
+        roomID: roomID, player: playerID.current, paddlePosition: userPaddlePosition
+      } /*自分のいちを送る(userPaddlePosition)*/);
     }
   })
 
   return (
     <>
+      <Sphere position={serverBallPosition.current} >
+        <meshNormalMaterial />
+      </Sphere>
+
       <Text2D position={[0,12,0]} text="connect" onClick={connectSocket} />
       <color attach="background" args={['#888']} />
       <ambientLight intensity={0.5} />
