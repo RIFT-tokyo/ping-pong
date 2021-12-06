@@ -85,4 +85,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  @SubscribeMessage('client-to-server-points')
+  handlePointsChange(@ConnectedSocket() socket: Socket, @MessageBody() payload: { points: number[] }): void {
+    console.log("save game points: ", payload.points);
+    socket.broadcast.emit('server-to-client-points', {points: payload.points})
+  }
 }

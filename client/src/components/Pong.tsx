@@ -52,6 +52,10 @@ const Pong = () => {
     socket.current = io('http://c1r31s9.42tokyo.jp:4000/pong');
 //    socket.current = io('http://localhost:4000/pong');
 
+    socket.current.on('server-to-client-points', (data: { points: number[] }) => {
+      setPoints(data.points);
+    })
+
     socket.current.on('server-to-client-room-id', (data: { roomID: string, playerID: number }) => {
       console.log('room id: ', data.roomID);
       setRoomID(data.roomID)
@@ -107,12 +111,17 @@ const Pong = () => {
     */
 
     // 6. get ball position and velocity from react-three-cannon
-    if (ballPosition.current[2] <= -40/2) {
-      setPoints(prev => [prev[0] + 1, prev[1]]);
-    }
-    if (ballPosition.current[2] > 40/2) {
-      setPoints(prev => [prev[0], prev[1] + 1]);
-    }
+    if (playerID.current === 1) {
+      if (ballPosition.current[2] <= -40/2) {
+        setPoints(prev => [prev[0] + 1, prev[1]]);
+      }
+      if (ballPosition.current[2] > 40/2) {
+        setPoints(prev => [prev[0], prev[1] + 1]);
+      }
+      socket.current?.emit('client-to-server-points', {
+        points: points
+      });
+    } 
 
     // 7. emit ball position
     // 8. emit paddle position
