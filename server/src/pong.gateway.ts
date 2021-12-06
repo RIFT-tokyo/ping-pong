@@ -1,5 +1,6 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
+import { tmpdir } from 'os';
 
 @WebSocketGateway(4000, { namespace: 'pong', cors: true })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -9,6 +10,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   waitPlayer = 0;
   tmpRoomID = "";
+  roomIDstates = new Map<string, [boolean, boolean]>()
+
 
   // connect socket
   public async handleConnection(@ConnectedSocket() socket: Socket) {
@@ -28,6 +31,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log('2nd player connected');
     } else {
       this.tmpRoomID = Math.random().toString(36).substr(2, 9);
+      this.roomIDstates.set(this.tmpRoomID, [false, false]);
+      console.log(this.tmpRoomID);
       socket.join(this.tmpRoomID);
       this.waitPlayer++;
       playerID = 1;
@@ -46,7 +51,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     */
     // io.sockets.emit
     //this.server.to(payload.roomID).emit('server-to-client-ball-position', { player: payload.player, ballPosition: payload.ballPosition });
-    console.log('roomID: ', payload.roomID, ', player: ', payload.player, ', position: ', payload.ballPosition);
+    // console.log('roomID: ', payload.roomID, ', player: ', payload.player, ', position: ', payload.ballPosition);
     // socket.broadcast.emit('server-to-client-ball-position', { player: payload.player, ballPosition: payload.ballPosition });
     this.server.emit('server-to-client-ball-position', { player: payload.player, ballPosition: payload.ballPosition });
   }
@@ -61,6 +66,23 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // console.log('roomID: ', payload.roomID, ', player: ', payload.player, ', position: ', payload.paddlePosition);
     socket.broadcast.emit('server-to-client-player-position', { player: payload.player, paddlePosition: payload.paddlePosition });
+  }
+
+  // クライアントのroomIDが準備OK
+  @SubscribeMessage('client-to-server-room-id-ready')
+  handleRoomIDReady(@ConnectedSocket() socket: Socket, @MessageBody() payload: { roomID: string, player: number }): void {
+    console.log("player : ", payload.player, "roomID: ", payload.roomID);
+    let state = this.roomIDstates.get(payload.roomID);
+    console.log(state);
+
+    state[payload.player - 1] = true;
+    this.roomIDstates.set(payload.roomID, state);
+
+    console.log("player : ", payload.player);
+    const newState = this.roomIDstates.get(payload.roomID);
+    if (newState[0] === true && newState[1] === true) {
+      this.server.emit('server-to-client-game-start');
+    }
   }
 
 }

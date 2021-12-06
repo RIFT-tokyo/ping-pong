@@ -4,7 +4,7 @@ import { MutableRefObject, useEffect, useRef } from "react"
 import { position } from "../type/position"
 import { useFrame } from '@react-three/fiber';
 
-const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position }) => {
+const Ball: React.VFC<{ position: MutableRefObject<position>, started: boolean}> = ({ position, started }) => {
 //	const restitution = useRef(1.2)
 
 	const [ ref, api ] = useSphere(() => ({
@@ -21,10 +21,10 @@ const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position })
 	}))
 
   const resetBall = () => {
-    api.position.set(0, 0.5, 0);
-		let x = (Math.random() * Math.PI / 2 + Math.PI / 4) * (Math.random() > 0.5 ? 1 : -1)
-		api.velocity.set(22 * Math.cos(x), 0, 22 * Math.sin(x))
-	}
+	api.position.set(0, 0.5, 0);
+	let x = (Math.random() * Math.PI / 2 + Math.PI / 4) * (Math.random() > 0.5 ? 1 : -1)
+	api.velocity.set(22 * Math.cos(x), 0, 22 * Math.sin(x))
+  }
 
 	// 得点が入ったらボールをリセットする
   useFrame(() => {
@@ -38,6 +38,7 @@ const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position })
 
 	// ボールの初速度・角度を設定
 	useEffect(() => {
+		if (started) {
 		/* 0 < sin(x) < 1 */
 		let x = (Math.random() * Math.PI / 2 + Math.PI / 4) * (Math.random() > 0.5 ? 1 : -1)
 		api.velocity.set(22 * Math.cos(x), 0, 22 * Math.sin(x))
@@ -45,8 +46,14 @@ const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position })
 			position.current = v
 		})
 		return unsubscribe;
+		}
 	/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [])
+	}, [started])
+	// useEffect(() => {
+	// 	// console.log("キタァ: bool: ", started)
+	// 	// started && resetBall();
+	// 	resetBall();
+	// }, [started])
 
 	const property = useTexture({
 		map: 'https://blenderartists.org/uploads/default/original/3X/8/1/814a32caf0901716e85e291d2a99018e549373cd.jpg',

@@ -19,6 +19,7 @@ const Pong = () => {
   const [enemyPaddlePosition, setEnemyPaddlePosition] = useState<position>([0, 0.5, -19.5]);
   const [points, setPoints] = useState<number[]>([0, 0]);
   const ballPosition = useRef<position>([0, 0.5, 0]);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
 
   const [roomID, setRoomID] = useState<string>("testroom");
   const playerID = useRef<number>(0);
@@ -33,14 +34,20 @@ const Pong = () => {
   }
 
   useEffect(() => {
+    socket.current?.emit('client-to-server-room-id-ready',  {
+      roomID: roomID, player: playerID.current
+    })
+  }, [roomID]);
+
+  
+  useEffect(() => {
     state.camera.position.set(userPaddlePosition[0] * 0.3, 10, 30);
   }, [state.camera.position, userPaddlePosition]);
-
-
+  
   useEffect(() => {
     console.log('socket connected');
-//    socket.current = io('http://c1r31s9.42tokyo.jp:4000/pong');
-    socket.current = io('http://localhost:4000/pong');
+    socket.current = io('http://c1r31s9.42tokyo.jp:4000/pong');
+//    socket.current = io('http://localhost:4000/pong');
 
     socket.current.on('server-to-client-room-id', (data: { roomID: string, playerID: number }) => {
       console.log('room id: ', data.roomID);
@@ -55,13 +62,18 @@ const Pong = () => {
       }
     });
     socket.current.on('server-to-client-ball-position', (data: { player: number, ballPosition: [number, number, number] }) => {
-      console.log(playerID, ":", data);
+      // console.log(playerID, ":", data);
       if (data.player === playerID.current) {
         serverBallPosition.current = [data.ballPosition[0], serverBallPosition.current[1], data.ballPosition[2]];
       } else {
         serverBallPosition.current = [-data.ballPosition[0], serverBallPosition.current[1], -data.ballPosition[2]];
       }
-      console.log(serverBallPosition.current);
+      // console.log(serverBallPosition.current);
+    });
+
+    socket.current.on('server-to-client-game-start', () => {
+      console.log("komatsunana")
+      setGameStarted(true);
     });
   // eslint-disable-next-line
   }, [])
@@ -130,7 +142,7 @@ const Pong = () => {
         <Wall position={[-10, 0.5, 0]} />
         <Paddle position={userPaddlePosition}/>
         <Paddle position={enemyPaddlePosition} />
-        <Ball position={ballPosition} />
+        <Ball position={ballPosition} started={gameStarted}/>
         <Board position={[0, 0, 0]}/>
       </Physics>
       {/*<TextObject text="Hello" />*/}
