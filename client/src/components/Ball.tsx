@@ -55,11 +55,10 @@ const Ball: React.VFC<{ position: MutableRefObject<position> }> = ({ position })
 	  <mesh
 			position={position.current}
 			ref={ref}
-			castShadow
 		>
 			<sphereBufferGeometry args={[0.5, 16, 16]} />
 			{/* <meshNormalMaterial wireframe /> */}
-			<meshStandardMaterial {...property} />
+			<meshStandardMaterial opacity={0.0} transparent={true} {...property} />
 	  </mesh>
 	)
 }

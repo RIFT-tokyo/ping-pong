@@ -24,7 +24,7 @@ const Pong = () => {
   const playerID = useRef<number>(0);
   const socket = useRef<Socket>();
 
-  const serverBallPosition = useRef<position>([0, 2, 0]);
+  const serverBallPosition = useRef<position>([0, 0.5, 0]);
 
   const state = useThree();
 
@@ -39,6 +39,7 @@ const Pong = () => {
 
   useEffect(() => {
     console.log('socket connected');
+//    socket.current = io('http://c1r31s9.42tokyo.jp:4000/pong');
     socket.current = io('http://localhost:4000/pong');
 
     socket.current.on('server-to-client-room-id', (data: { roomID: string, playerID: number }) => {
@@ -113,7 +114,7 @@ const Pong = () => {
 
   return (
     <>
-      <Sphere position={serverBallPosition.current} >
+      <Sphere args={[0.5, 16, 16]} position={serverBallPosition.current} >
         <meshNormalMaterial />
       </Sphere>
 
