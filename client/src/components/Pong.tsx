@@ -25,12 +25,15 @@ const Pong = () => {
   const playerID = useRef<number>(0);
   const socket = useRef<Socket>();
 
+  const text = useRef("connect");
+
   const serverBallPosition = useRef<position>([0, 0.5, 0]);
 
   const state = useThree();
 
   const connectSocket = (e: ThreeEvent<MouseEvent>) => {
     socket.current?.emit('client-to-server-request-room-id')
+    text.current = "connecting ...";
   }
 
   useEffect(() => {
@@ -73,6 +76,7 @@ const Pong = () => {
 
     socket.current.on('server-to-client-game-start', () => {
       console.log("komatsunana")
+      text.current = "start";
       setGameStarted(true);
     });
   // eslint-disable-next-line
@@ -130,7 +134,7 @@ const Pong = () => {
         <meshNormalMaterial />
       </Sphere>
 
-      <Text2D position={[0,12,0]} text="connect" onClick={connectSocket} />
+      <Text2D position={[0,12,0]} text={text.current} onClick={connectSocket} />
       <color attach="background" args={['#888']} />
       <ambientLight intensity={0.5} />
       <PointLight position={[6, 15, -7]} />
