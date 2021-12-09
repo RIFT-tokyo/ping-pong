@@ -49,8 +49,8 @@ const Pong = () => {
   
   useEffect(() => {
     console.log('socket connected');
-    socket.current = io('http://c1r31s9.42tokyo.jp:4000/pong');
-//    socket.current = io('http://localhost:4000/pong');
+//    socket.current = io('http://c1r31s9.42tokyo.jp:4000/pong');
+    socket.current = io('http://localhost:4000/pong');
 
     socket.current.on('server-to-client-points', (data: { points: number[] }) => {
       setPoints(data.points);
