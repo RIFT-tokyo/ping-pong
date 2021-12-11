@@ -20,7 +20,7 @@ function App() {
     <div className="App">
       <Global styles={globalStyles} />
       <Canvas
-        shadows={true}
+        // shadows={true}
         camera={{ position: [0, 10, 30] }}
         style={{ width: "100vw", height: "100vh" }}
       >
